@@ -1,0 +1,10 @@
+CSV <--> TSV
+  │
+  │ many files, each file = one sheet/tab
+  ▼
+XLSX
+  │
+  │ always possible
+  │ JSON may be too flexible to convert back to tabular data (validate first)
+  ▼
+JSON <--> JSONL <--> YAML <--> TOML

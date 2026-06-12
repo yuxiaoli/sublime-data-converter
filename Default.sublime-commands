@@ -1,0 +1,13 @@
+[
+    {
+        "caption": "Data Converter: Convert\u2026",
+        "command": "data_converter_pick_format"
+    },
+    { "caption": "Data Converter: Convert to CSV",   "command": "data_converter_convert", "args": { "to_format": "csv"   } },
+    { "caption": "Data Converter: Convert to TSV",   "command": "data_converter_convert", "args": { "to_format": "tsv"   } },
+    { "caption": "Data Converter: Convert to JSON",  "command": "data_converter_convert", "args": { "to_format": "json"  } },
+    { "caption": "Data Converter: Convert to JSONL", "command": "data_converter_convert", "args": { "to_format": "jsonl" } },
+    { "caption": "Data Converter: Convert to YAML",  "command": "data_converter_convert", "args": { "to_format": "yaml"  } },
+    { "caption": "Data Converter: Convert to TOML",  "command": "data_converter_convert", "args": { "to_format": "toml"  } },
+    { "caption": "Data Converter: Convert to XLSX",  "command": "data_converter_convert", "args": { "to_format": "xlsx"  } }
+]
