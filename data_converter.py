@@ -65,22 +65,23 @@ def _open_text_in_new_view(window, text, name):
 # XLSX integration
 # ---------------------------------------------------------------------------
 
+def _is_multi_sheet(data):
+    """Check if structured data represents multiple sheets (dict of lists of dicts)."""
+    return (
+        isinstance(data, dict)
+        and bool(data)
+        and all(
+            isinstance(v, list) and bool(v) and all(isinstance(x, dict) for x in v)
+            for v in data.values()
+        )
+    )
+
+
 def _records_for_xlsx_sheets(data):
     """Normalize structured data into a dict[sheet_name -> rows]."""
+    if _is_multi_sheet(data):
+        return {name: records_to_tabular(rows) for name, rows in data.items()}
     if isinstance(data, dict):
-        # Treat each top-level key as a sheet if its value is a list of dicts;
-        # otherwise put the whole dict in a single sheet "Sheet1".
-        is_multi = (
-            data
-            and all(
-                isinstance(v, list)
-                and v
-                and all(isinstance(x, dict) for x in v)
-                for v in data.values()
-            )
-        )
-        if is_multi:
-            return {name: records_to_tabular(rows) for name, rows in data.items()}
         return {"Sheet1": records_to_tabular([data])}
     if isinstance(data, list):
         return {"Sheet1": records_to_tabular(data)}
@@ -119,8 +120,8 @@ def _read_view_as_structured(view, src_fmt):
 
 def _write_structured_for_view(window, view, data, dst_fmt):
     """Serialize and present the result according to dst_fmt."""
-    out_name = _output_view_name(view, dst_fmt)
     if dst_fmt == "xlsx":
+        out_name = _output_view_name(view, dst_fmt)
         sheets = _records_for_xlsx_sheets(data)
         blob = xlsx_mod.write_xlsx_bytes(sheets)
         # Write to a real file so Sublime can open it.
@@ -134,6 +135,15 @@ def _write_structured_for_view(window, view, data, dst_fmt):
         sublime.status_message("Data Converter: wrote " + out_path)
         window.open_file(out_path)
         return
+
+    if dst_fmt in ("csv", "tsv") and _is_multi_sheet(data):
+        for name, rows in data.items():
+            text = write_text_format(rows, dst_fmt)
+            out_name = "{0}.{1}.{2}".format(_input_basename(view), name, dst_fmt)
+            _open_text_in_new_view(window, text, out_name)
+        return
+
+    out_name = _output_view_name(view, dst_fmt)
     text = write_text_format(data, dst_fmt)
     _open_text_in_new_view(window, text, out_name)
 
@@ -175,14 +185,6 @@ class DataConverterConvertCommand(sublime_plugin.TextCommand):
             return
 
         try:
-            if src_fmt in TEXT_FORMATS and to_format in TEXT_FORMATS:
-                text = view.substr(sublime.Region(0, view.size()))
-                out = convert_text(text, src_fmt, to_format)
-                _open_text_in_new_view(
-                    window, out, _output_view_name(view, to_format)
-                )
-                return
-
             data = _read_view_as_structured(view, src_fmt)
             _write_structured_for_view(window, view, data, to_format)
         except ImportError as e:

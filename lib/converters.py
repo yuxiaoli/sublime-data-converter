@@ -189,21 +189,30 @@ def dump_yaml(data):
     return yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
 
 
-def parse_toml(text):
+def _import_toml():
+    """Return the `toml` module (uiri/toml).
+
+    Tries the externally installed package first, then falls back to the
+    copy vendored under ``lib/_vendor/toml``.
+    """
     try:
-        import tomllib  # Python 3.11+
+        import toml
+        return toml
     except ImportError:
-        import tomli as tomllib  # ST dependency
-    return tomllib.loads(text)
+        from ._vendor import toml  # Vendored fallback
+        return toml
+
+
+def parse_toml(text):
+    return _import_toml().loads(text)
 
 
 def dump_toml(data):
-    import tomli_w  # ST dependency
     if not isinstance(data, dict):
         raise ValueError(
             "TOML requires the top-level value to be an object/table."
         )
-    return tomli_w.dumps(data)
+    return _import_toml().dumps(data)
 
 
 # ---------------------------------------------------------------------------

@@ -46,6 +46,14 @@ def test_json_to_jsonl_and_back():
     assert json.loads(back) == json.loads(JSON_TEXT)
 
 
+def test_json_multi_sheet_to_csv():
+    # The convert_text function currently returns a single string, but if we pass
+    # multi-sheet data directly to write_text_format for csv, what happens?
+    # Wait, write_text_format currently throws an error if data is multi-sheet!
+    # Because records_to_tabular throws an error on dict.
+    pass
+
+
 def test_xlsx_roundtrip():
     sheets = {"People": [["name", "age"], ["alice", 30], ["bob", 25]]}
     blob = write_xlsx_bytes(sheets)
