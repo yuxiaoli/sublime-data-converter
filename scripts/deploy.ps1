@@ -61,9 +61,6 @@ Write-Host "Destination: $Dest"
 Write-Host "Mode       : $(if ($Symlink) { 'symlink (junction)' } else { 'copy' })"
 
 if (Test-Path $Dest) {
-    if (-not ($Force -or $Symlink)) {
-        throw "Destination exists: $Dest. Pass -Force to overwrite or -Symlink."
-    }
     Write-Host "Removing existing destination..."
     Remove-Item -Recurse -Force $Dest
 }
