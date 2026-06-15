@@ -64,11 +64,39 @@ def test_xlsx_roundtrip():
     assert parsed["People"][1] == ["alice", "30"]
 
 
+def test_shorten():
+    import sys
+    sys.path.insert(0, '.')
+    from data_converter import _shorten
+    
+    data = {
+        "j0": [
+            { "i0": "v0" },
+            { "i1": "v1" }
+        ],
+        "j1": [
+            { "i0": "v0" },
+            { "i1": "v1" }
+        ]
+    }
+    
+    expected = {
+        "j0": [
+            { "i0": "v0" }
+        ],
+        "j1": [
+            { "i0": "v0" }
+        ]
+    }
+    
+    assert _shorten(data) == expected
+
 def main():
     test_csv_to_tsv()
     test_csv_to_json_records()
     test_json_to_jsonl_and_back()
     test_xlsx_roundtrip()
+    test_shorten()
     print("OK")
 
 

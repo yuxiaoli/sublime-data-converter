@@ -9,5 +9,6 @@
     { "caption": "Data Converter: Convert to JSONL", "command": "data_converter_convert", "args": { "to_format": "jsonl" } },
     { "caption": "Data Converter: Convert to YAML",  "command": "data_converter_convert", "args": { "to_format": "yaml"  } },
     { "caption": "Data Converter: Convert to TOML",  "command": "data_converter_convert", "args": { "to_format": "toml"  } },
-    { "caption": "Data Converter: Convert to XLSX",  "command": "data_converter_convert", "args": { "to_format": "xlsx"  } }
+    { "caption": "Data Converter: Convert to XLSX",  "command": "data_converter_convert", "args": { "to_format": "xlsx"  } },
+    { "caption": "Data Converter: Shorten Data",     "command": "data_converter_shorten" }
 ]

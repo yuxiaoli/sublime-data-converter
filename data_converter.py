@@ -15,22 +15,43 @@ import os
 import tempfile
 import traceback
 
-import sublime
-import sublime_plugin
+try:
+    import sublime
+    import sublime_plugin
+except ImportError:
+    # Allow tests to import this module without sublime
+    class MockSublimePlugin:
+        class TextCommand:
+            pass
+    sublime_plugin = MockSublimePlugin()
+    sublime = None
 
 # Sublime loads this module as `Packages.<PackageName>.data_converter`, so use
 # relative imports for the bundled `lib` subpackage.
-from .lib import xlsx as xlsx_mod
-from .lib.converters import (
-    ALL_FORMATS,
-    TEXT_FORMATS,
-    convert_text,
-    detect_format,
-    read_text_format,
-    records_to_tabular,
-    tabular_to_records,
-    write_text_format,
-)
+try:
+    from .lib import xlsx as xlsx_mod
+    from .lib.converters import (
+        ALL_FORMATS,
+        TEXT_FORMATS,
+        convert_text,
+        detect_format,
+        read_text_format,
+        records_to_tabular,
+        tabular_to_records,
+        write_text_format,
+    )
+except ImportError:
+    from lib import xlsx as xlsx_mod
+    from lib.converters import (
+        ALL_FORMATS,
+        TEXT_FORMATS,
+        convert_text,
+        detect_format,
+        read_text_format,
+        records_to_tabular,
+        tabular_to_records,
+        write_text_format,
+    )
 
 
 def _input_basename(view):
@@ -197,6 +218,48 @@ class DataConverterConvertCommand(sublime_plugin.TextCommand):
             _show_error("{0}: {1}".format(type(e).__name__, e))
 
 
+def _shorten(obj):
+    if isinstance(obj, dict):
+        return {k: _shorten(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        if not obj:
+            return []
+        return [_shorten(obj[0])]
+    return obj
+
+
+class DataConverterShortenCommand(sublime_plugin.TextCommand):
+    """Shorten a JSON object.
+    
+    Go through the object and if the type is list, shorten it to the first element.
+    """
+    def run(self, edit, from_format=None):
+        view = self.view
+        window = view.window() or sublime.active_window()
+        if window is None:
+            _show_error("No active window.")
+            return
+
+        src_fmt = from_format or detect_format(view.file_name() or view.name())
+        if src_fmt not in ALL_FORMATS:
+            _show_error(
+                "Could not detect source format. Pass 'from_format' explicitly."
+            )
+            return
+
+        try:
+            data = _read_view_as_structured(view, src_fmt)
+            
+            shortened_data = _shorten(data)
+            
+            # Write back using the same format
+            out_name = "{0}.shortened.{1}".format(_input_basename(view), src_fmt)
+            text = write_text_format(shortened_data, src_fmt)
+            _open_text_in_new_view(window, text, out_name)
+            
+        except Exception as e:
+            traceback.print_exc()
+            _show_error("{0}: {1}".format(type(e).__name__, e))
 class DataConverterPickFormatCommand(sublime_plugin.TextCommand):
     """Show a quick panel with candidate target formats."""
 
