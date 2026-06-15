@@ -22,9 +22,12 @@ Open the Command Palette and search for:
 - `Data Converter: Convert to CSV / TSV / JSON / JSONL / YAML / TOML / XLSX`
 - `Data Converter: Shorten Data` - Shorten the data object (if a value is a list, it gets shortened to its first element). Works for all supported formats. Retains the original syntax highlighting.
 
-The source format is detected from the file extension. The result opens in a
-new tab named `{input_filename}.{to_format}`. For multi-sheet structures (like a JSON dictionary containing lists of records) converted to CSV/TSV, it generates multiple tabs named `{input_filename}.{sheet}.{to_format}`. XLSX output is written to a real
-file (next to the input when possible) and that file is opened.
+### Output Behavior
+
+- **Conversion**: The source format is detected from the file extension. The result opens in a new tab named `{input_filename}.{to_format}`. 
+  - For **multi-sheet structures** (like a JSON dictionary containing lists of records) converted to CSV/TSV, it generates multiple tabs named `{input_filename}.{sheet}.{to_format}`. 
+  - **XLSX output** is written to a real file (next to the input when possible) and that file is opened.
+- **Shorten**: The shortened result opens in a new tab named `{input_filename}.shortened.{format}`. Like conversion, XLSX outputs are written directly to a file.
 
 ## Dependencies
 
@@ -44,5 +47,6 @@ dates are not preserved.
 - `data_converter.py` - Sublime command implementations.
 - `lib/converters.py` - format detection, parse/dump, conversion graph.
 - `lib/xlsx.py` - stdlib-only XLSX read/write.
+- `lib/_vendor/` - vendored dependencies (`uiri/toml`).
 - `Default.sublime-commands` - command palette entries.
 - `dependencies.json` - Package Control dependency declaration.
