@@ -74,10 +74,12 @@ def _show_error(message):
     sublime.error_message("Data Converter: " + message)
 
 
-def _open_text_in_new_view(window, text, name):
+def _open_text_in_new_view(window, text, name, syntax=None):
     new_view = window.new_file()
     new_view.set_name(name)
     new_view.set_scratch(True)
+    if syntax:
+        new_view.assign_syntax(syntax)
     new_view.run_command("append", {"characters": text})
     return new_view
 
@@ -229,9 +231,10 @@ def _shorten(obj):
 
 
 class DataConverterShortenCommand(sublime_plugin.TextCommand):
-    """Shorten a JSON object.
+    """Shorten data structure.
     
     Go through the object and if the type is list, shorten it to the first element.
+    Works for all supported formats.
     """
     def run(self, edit, from_format=None):
         view = self.view
@@ -254,8 +257,23 @@ class DataConverterShortenCommand(sublime_plugin.TextCommand):
             
             # Write back using the same format
             out_name = "{0}.shortened.{1}".format(_input_basename(view), src_fmt)
-            text = write_text_format(shortened_data, src_fmt)
-            _open_text_in_new_view(window, text, out_name)
+            
+            if src_fmt == "xlsx":
+                sheets = _records_for_xlsx_sheets(shortened_data)
+                blob = xlsx_mod.write_xlsx_bytes(sheets)
+                src_path = view.file_name()
+                if src_path:
+                    out_path = os.path.join(os.path.dirname(src_path), out_name)
+                else:
+                    out_path = os.path.join(tempfile.gettempdir(), out_name)
+                with open(out_path, "wb") as fp:
+                    fp.write(blob)
+                sublime.status_message("Data Converter: wrote " + out_path)
+                window.open_file(out_path)
+            else:
+                text = write_text_format(shortened_data, src_fmt)
+                syntax = view.settings().get("syntax")
+                _open_text_in_new_view(window, text, out_name, syntax=syntax)
             
         except Exception as e:
             traceback.print_exc()
