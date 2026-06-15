@@ -77,6 +77,10 @@ def test_shorten():
         "j1": [
             { "i0": "v0" },
             { "i1": "v1" }
+        ],
+        "nested_lists": [
+            [1, 2, 3],
+            [4, 5, 6]
         ]
     }
     
@@ -86,6 +90,9 @@ def test_shorten():
         ],
         "j1": [
             { "i0": "v0" }
+        ],
+        "nested_lists": [
+            [1]
         ]
     }
     
