@@ -20,7 +20,7 @@ Open the Command Palette and search for:
 
 - `Data Converter: Convert...` - pick the target via quick panel.
 - `Data Converter: Convert to CSV / TSV / JSON / JSONL / YAML / TOML / XLSX`
-- `Data Converter: Shorten Data` - Shorten the data object (if a value is a list, it gets shortened to its first element). Works for all supported formats. Retains the original syntax highlighting.
+- `Data Converter: Shorten Data` - Recursively shorten the data object (any list, including nested lists, is truncated to just its first element). Works for all supported formats. Retains the original syntax highlighting.
 
 ### Output Behavior
 

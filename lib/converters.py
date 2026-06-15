@@ -108,13 +108,6 @@ def records_to_tabular(records):
             if k not in seen:
                 seen.add(k)
                 headers.append(k)
-        for v in rec.values():
-            if isinstance(v, (dict, list)):
-                raise ValueError(
-                    "Cannot convert to tabular: nested objects/arrays are not "
-                    "supported. Field has value of type "
-                    + type(v).__name__ + "."
-                )
     rows = [list(headers)]
     for rec in records:
         rows.append([_stringify(rec.get(h, "")) for h in headers])
@@ -148,6 +141,8 @@ def _stringify(v):
         return ""
     if isinstance(v, bool):
         return "true" if v else "false"
+    if isinstance(v, (dict, list)):
+        return json.dumps(v, ensure_ascii=False)
     return str(v)
 
 

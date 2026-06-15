@@ -77,7 +77,6 @@ def _show_error(message):
 def _open_text_in_new_view(window, text, name, syntax=None):
     new_view = window.new_file()
     new_view.set_name(name)
-    new_view.set_scratch(True)
     if syntax:
         new_view.assign_syntax(syntax)
     new_view.run_command("append", {"characters": text})
