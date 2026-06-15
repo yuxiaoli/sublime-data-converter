@@ -20,6 +20,7 @@ Open the Command Palette and search for:
 
 - `Data Converter: Convert...` - pick the target via quick panel.
 - `Data Converter: Convert to CSV / TSV / JSON / JSONL / YAML / TOML / XLSX`
+- `Data Converter: Shorten Data` - Shorten a JSON object (if a value is a list, it gets shortened to its first element).
 
 The source format is detected from the file extension. The result opens in a
 new tab named `{input_filename}.{to_format}`. For multi-sheet structures (like a JSON dictionary containing lists of records) converted to CSV/TSV, it generates multiple tabs named `{input_filename}.{sheet}.{to_format}`. XLSX output is written to a real
