@@ -6,5 +6,6 @@ XLSX
   │
   │ always possible
   │ JSON may be too flexible to convert back to tabular data (validate first)
+  │ multi-sheet JSON converts to multiple CSV/TSV files
   ▼
 JSON <--> JSONL <--> YAML <--> TOML

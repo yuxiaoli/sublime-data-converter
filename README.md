@@ -22,7 +22,7 @@ Open the Command Palette and search for:
 - `Data Converter: Convert to CSV / TSV / JSON / JSONL / YAML / TOML / XLSX`
 
 The source format is detected from the file extension. The result opens in a
-new tab named `{input_filename}.{to_format}`. XLSX output is written to a real
+new tab named `{input_filename}.{to_format}`. For multi-sheet structures (like a JSON dictionary containing lists of records) converted to CSV/TSV, it generates multiple tabs named `{input_filename}.{sheet}.{to_format}`. XLSX output is written to a real
 file (next to the input when possible) and that file is opened.
 
 ## Dependencies
@@ -31,7 +31,8 @@ Declared in [`dependencies.json`](dependencies.json) and installed by
 Package Control:
 
 - `pyyaml` (YAML)
-- `tomli`, `tomli_w` (TOML)
+
+TOML support is provided by a vendored copy of `uiri/toml` to ensure compatibility across Sublime Text Python plugin hosts.
 
 XLSX is handled with the Python standard library only (no `openpyxl`).
 Supported XLSX cell types are strings and numbers; styles, formulas, and
